@@ -1,5 +1,5 @@
-#ifndef IMAGES_H
-#define IMAGES_H
+#ifndef BITMAPS_H
+#define BITMAPS_H
 
 extern const unsigned char testMap[] PROGMEM = {
   B00000001, B10000000,
