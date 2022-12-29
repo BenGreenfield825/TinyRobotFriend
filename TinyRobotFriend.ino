@@ -37,6 +37,9 @@ int leftButton;
 //used for switching to faces or other screens
 bool isIdle = 1; //start as idle (show faces)
 
+bool enterMenu = false; //check to see if index should be zero
+int menuIndex = 0; //TODO: change logic so that index gets reset to 0 when leaving and re-entering menu
+
 void setup() {
   Serial.begin(9600);
   // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
@@ -67,7 +70,8 @@ void loop() {
     happyBlinking();
   }
   else {
-    welcome(); //try switching to this just as a test
+    // enterMenu = true;
+    menu(); //try switching to this just as a test
   }
 }
 
@@ -167,6 +171,61 @@ void welcome() {
   display.display();
 
   delay(5000);
+}
+
+void menu() {
+  const int yFirstOffset = 4;
+  const int yWordOffset = 10;
+  const int xFirstOffset = 5;
+  const int xWordOffset = 5;
+
+  const int yBoxSpacer = 2;
+  const int xBoxSpacer = 3;
+  const int boxHeight = 11;
+  const int boxWidth = 70;
+  
+  // if(enterMenu) menuIndex = 0;
+
+  display.clearDisplay();
+
+  display.drawRoundRect(0, 0, 128, 64, 4, SSD1306_WHITE);
+  display.setTextSize(1);             // Normal 1:1 pixel scale
+  display.setTextColor(SSD1306_WHITE);        // Draw white text
+  
+  display.setCursor(xFirstOffset, yFirstOffset); //4
+  display.println(F("Menu"));
+  display.drawLine(5, 12, 30, 12, SSD1306_WHITE);
+
+  display.setCursor(xWordOffset, yFirstOffset + (yWordOffset)); //14
+  display.println(F("My face"));
+
+  display.setCursor(xWordOffset, yFirstOffset + (yWordOffset * 2)); //24
+  display.println(F("Wack-A-Mole"));
+
+  display.setCursor(xWordOffset, yFirstOffset + (yWordOffset * 3)); //34
+  display.println(F("Snake"));
+
+  //selection indicator
+  if(upButton) {
+    if(menuIndex > 1) menuIndex--;
+    delay(100); //TODO: make sure this is okay later lol
+  }
+  else if (downButton) {
+    if(menuIndex < 3) menuIndex++;
+    delay(100);
+  }
+  if(menuIndex != 0) {
+    int ybo = yBoxOffset(menuIndex, yFirstOffset, yWordOffset, yBoxSpacer);
+    display.drawRect(xBoxSpacer, ybo, boxWidth, boxHeight, SSD1306_WHITE);
+  }
+
+  //TODO: when leaving menu, set enterMenu to false
+
+  display.display();
+}
+
+int yBoxOffset(int position, int yFirstOffset, int yWordOffset, int yBoxSpacer) {
+  return yFirstOffset + (yWordOffset * position) - yBoxSpacer;
 }
 
 void readDPad() {
