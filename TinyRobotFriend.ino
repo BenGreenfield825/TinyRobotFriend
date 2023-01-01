@@ -61,6 +61,7 @@ void setup() {
 }
 
 void loop() {
+  // displayPixelTest();
   digitalWrite(ledPin, HIGH);
 	
   readDPad();
@@ -217,7 +218,28 @@ void menu() {
   if(menuIndex != 0) {
     int ybo = yBoxOffset(menuIndex, yFirstOffset, yWordOffset, yBoxSpacer);
     display.drawRect(xBoxSpacer, ybo, boxWidth, boxHeight, SSD1306_WHITE);
+    //hit "enter" on the selection
+    if(rightButton) {
+      switch (menuIndex)
+      {
+      case 1:
+        happyBlinking();
+        break;
+
+      case 2:
+        wackAMole();
+        break;
+
+      case 3:
+        snake();
+        break;
+      
+      default:
+        break;
+      }
+    }
   }
+  
 
   //TODO: when leaving menu, set enterMenu to false
 
@@ -226,6 +248,20 @@ void menu() {
 
 int yBoxOffset(int position, int yFirstOffset, int yWordOffset, int yBoxSpacer) {
   return yFirstOffset + (yWordOffset * position) - yBoxSpacer;
+}
+
+//place holder for entering game, will probably make a class
+void wackAMole() {
+  display.clearDisplay();
+  display.drawCircle(64, 32, 5, SSD1306_WHITE);
+  display.display();
+}
+
+//place holder for entering game, will probably make a class
+void snake() {
+  display.clearDisplay();
+  display.drawRect(64, 32, 5, 10, SSD1306_WHITE);
+  display.display();
 }
 
 void readDPad() {
@@ -242,4 +278,13 @@ void readDPad() {
   Serial.print(", Left: ");
   Serial.print(leftButton);
   Serial.println();
+}
+
+void displayPixelTest() {
+  display.clearDisplay();
+  for(int i=0; i <= SCREEN_HEIGHT; i++) {
+    display.drawPixel(10, i, SSD1306_WHITE);
+    display.drawPixel(15, ++i, SSD1306_WHITE);
+    display.display();
+  }
 }
