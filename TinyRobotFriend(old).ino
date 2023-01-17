@@ -1,5 +1,3 @@
-
-
 /*
 * Use 4 direction d-pad, enter/back can be the left and right buttons when they are not
 * being used as controls 
@@ -8,17 +6,6 @@
 * count it as scoring
 *
 */
-
-
-#include <Arduino.h>
-#include <U8g2lib.h>
-
-#ifdef U8X8_HAVE_HW_SPI
-#include <SPI.h>
-#endif
-#ifdef U8X8_HAVE_HW_I2C
-#include <Wire.h>
-#endif
 
 #include <SPI.h>
 #include <Wire.h>
@@ -32,8 +19,6 @@
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 #define OLED_RESET     4 // Reset pin # (or -1 if sharing Arduino reset pin)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
-
-U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, /* clock=*/ SCL, /* data=*/ SDA, /* reset=*/ U8X8_PIN_NONE);   // All Boards without Reset of the Display
 
 const int randomPin = 3;
 
@@ -57,8 +42,11 @@ int menuIndex = 0; //TODO: change logic so that index gets reset to 0 when leavi
 
 void setup() {
   Serial.begin(9600);
-  
-  u8g2.begin();
+  // SSD1306_SWITCHCAPVCC = generate display voltage from 3.3V internally
+  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3C for 128x32
+    Serial.println(F("SSD1306 allocation failed"));
+    for(;;); // Don't proceed, loop forever
+  }
 
   pinMode(upPin, INPUT);
   pinMode(rightPin, INPUT);
@@ -68,7 +56,7 @@ void setup() {
   pinMode(ledPin, OUTPUT);
 
   // Clear the buffer
-  u8g2.clearBuffer();
+  display.clearDisplay();
   welcome();
 }
 
@@ -76,16 +64,16 @@ void loop() {
   // displayPixelTest();
   digitalWrite(ledPin, HIGH);
 	
-  // readDPad();
+  readDPad();
 
-  // if(isIdle) {
-  //   //switch control to happyBlinking
-  //   happyBlinking();
-  // }
-  // else {
-  //   // enterMenu = true;
-  //   menu(); //try switching to this just as a test
-  // }
+  if(isIdle) {
+    //switch control to happyBlinking
+    happyBlinking();
+  }
+  else {
+    // enterMenu = true;
+    menu(); //try switching to this just as a test
+  }
 }
 
 void happyBlinking() {
@@ -169,25 +157,19 @@ void happyBlinkingOLD() {
 }
 
 void welcome() {
-  // display.clearDisplay();
+  display.clearDisplay();
 
-  // display.drawRoundRect(0, 0, 128, 64, 4, SSD1306_WHITE);
-  // display.setTextSize(1);             // Normal 1:1 pixel scale
-  // display.setTextColor(SSD1306_WHITE);        // Draw white text
-  // display.setCursor(5,10);             // Start at top-left corner
-  // display.println(F("Hi! My name is T.R.F"));
-  // display.setCursor(5,20);  
-  // display.println(F("(Tiny Robot Friend)"));
-  // display.setCursor(5,40);  
-  // display.println(F("Press a button to do stuff!"));
+  display.drawRoundRect(0, 0, 128, 64, 4, SSD1306_WHITE);
+  display.setTextSize(1);             // Normal 1:1 pixel scale
+  display.setTextColor(SSD1306_WHITE);        // Draw white text
+  display.setCursor(5,10);             // Start at top-left corner
+  display.println(F("Hi! My name is T.R.F"));
+  display.setCursor(5,20);  
+  display.println(F("(Tiny Robot Friend)"));
+  display.setCursor(5,40);  
+  display.println(F("Press a button to do stuff!"));
 
-  // display.display();
-
-  u8g2.clearBuffer();					// clear the internal memory
-  u8g2.setFont(u8g2_font_ncenB08_tr);	// choose a suitable font
-  u8g2.drawStr(0,10,"Ahhhhh!!!");	// write something to the internal memory
-  u8g2.sendBuffer();					// transfer internal memory to the display
-
+  display.display();
 
   delay(5000);
 }
