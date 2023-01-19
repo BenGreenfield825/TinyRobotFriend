@@ -169,25 +169,14 @@ void happyBlinkingOLD() {
 }
 
 void welcome() {
-  // display.clearDisplay();
-
-  // display.drawRoundRect(0, 0, 128, 64, 4, SSD1306_WHITE);
-  // display.setTextSize(1);             // Normal 1:1 pixel scale
-  // display.setTextColor(SSD1306_WHITE);        // Draw white text
-  // display.setCursor(5,10);             // Start at top-left corner
-  // display.println(F("Hi! My name is T.R.F"));
-  // display.setCursor(5,20);  
-  // display.println(F("(Tiny Robot Friend)"));
-  // display.setCursor(5,40);  
-  // display.println(F("Press a button to do stuff!"));
-
-  // display.display();
-
-  u8g2.clearBuffer();					// clear the internal memory
-  u8g2.setFont(u8g2_font_ncenB08_tr);	// choose a suitable font
-  u8g2.drawStr(0,10,"Ahhhhh!!!");	// write something to the internal memory
-  u8g2.sendBuffer();					// transfer internal memory to the display
-
+  u8g2.clearBuffer();	
+  // u8g2.setFont(u8g2_font_originalsans_tr);	// choose a suitable font
+  u8g2.setFont(u8g2_font_4x6_mf);	// choose a suitable font
+  u8g2.drawRFrame(0,0,128,64,4);
+  u8g2.drawStr(5,10,"Hi! My name is T.R.F");
+  u8g2.drawStr(5,20,"(Tiny Robot Friend)");
+  u8g2.drawStr(5,40,"Press a button to do stuff!");
+  u8g2.sendBuffer();
 
   delay(5000);
 }
