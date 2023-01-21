@@ -57,6 +57,7 @@ int menuIndex = 0; //TODO: change logic so that index gets reset to 0 when leavi
 
 void setup() {
   Serial.begin(9600);
+  // Serial.begin(9600);
   
   u8g2.begin();
 
@@ -69,23 +70,28 @@ void setup() {
 
   // Clear the buffer
   u8g2.clearBuffer();
-  welcome();
+  // welcome();
 }
 
 void loop() {
-  // displayPixelTest();
-  digitalWrite(ledPin, HIGH);
+  // digitalWrite(ledPin, HIGH);
 	
-  // readDPad();
+  readDPad();
 
-  // if(isIdle) {
-  //   //switch control to happyBlinking
-  //   happyBlinking();
-  // }
-  // else {
-  //   // enterMenu = true;
-  //   menu(); //try switching to this just as a test
-  // }
+  if(isIdle) {
+    //switch control to happyBlinking
+    happyBlinking();
+  }
+  else {
+    // enterMenu = true;
+    menu(); //try switching to this just as a test
+  }
+}
+
+void bitmapTest() {
+  u8g2.clearBuffer();
+  u8g2.drawXBM(0, 0, 128, 64, happy_closed_eyes);
+  u8g2.sendBuffer();
 }
 
 void happyBlinking() {
@@ -94,10 +100,11 @@ void happyBlinking() {
   int randomMillis;
   unsigned long startTime;
   //start with normal face
-  display.clearDisplay();
-  display.drawBitmap(0, 0, happy, 128, 64, 1);
-  display.display();
+  u8g2.clearBuffer();
+  u8g2.drawXBM(0, 0, 128, 64, happy);
+  u8g2.sendBuffer();
   while(true) {
+    //TODO: pretty sure these 4 lines should be removed if readDPad() is running (or just call it here)
     upButton = digitalRead(upPin);
     rightButton = digitalRead(rightPin);
     downButton = digitalRead(downPin);
@@ -121,9 +128,9 @@ void happyBlinking() {
         int blinks;
         (doubleBlink == 4) ? blinks = 2 : blinks = 1;
         for(int i=0; i < blinks; i++) {
-          display.clearDisplay();
-          display.drawBitmap(0, 0, happy_closed_eyes, 128, 64, 1);
-          display.display();
+          u8g2.clearBuffer();
+          u8g2.drawXBM(0, 0, 128, 64, happy_closed_eyes);
+          u8g2.sendBuffer();
           //TODO: double blinking is messed up, trying to do another millis eventually breaks it
           delay(150);
           // int blinkingTime = millis();
@@ -135,9 +142,9 @@ void happyBlinking() {
         waiting = false; //set to false so next loop we generate a new timer
       }
       else{ //otherwise keep looping and normal face until time is met
-        display.clearDisplay();
-        display.drawBitmap(0, 0, happy, 128, 64, 1);
-        display.display();
+        u8g2.clearBuffer();
+        u8g2.drawXBM(0, 0, 128, 64, happy);
+        u8g2.sendBuffer();
       }     
     }
   }
@@ -171,7 +178,7 @@ void happyBlinkingOLD() {
 void welcome() {
   u8g2.clearBuffer();	
   // u8g2.setFont(u8g2_font_originalsans_tr);	// choose a suitable font
-  u8g2.setFont(u8g2_font_4x6_mf);	// choose a suitable font
+  u8g2.setFont(u8g2_font_5x7_tr);	// choose a suitable font
   u8g2.drawRFrame(0,0,128,64,4);
   u8g2.drawStr(5,10,"Hi! My name is T.R.F");
   u8g2.drawStr(5,20,"(Tiny Robot Friend)");
