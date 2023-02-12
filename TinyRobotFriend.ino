@@ -1,15 +1,3 @@
-
-
-/*
-* Use 4 direction d-pad, enter/back can be the left and right buttons when they are not
-* being used as controls 
-* 
-* Wack-a-mole: No select/hit button, if you move your cursor to the location in time,
-* count it as scoring
-*
-*/
-
-
 #include <Arduino.h>
 #include <U8g2lib.h>
 
@@ -22,27 +10,23 @@
 
 #include <SPI.h>
 #include <Wire.h>
-#include <Adafruit_GFX.h>
-#include <Adafruit_SSD1306.h>
+
+#include "Snake/Snake.h"
 #include "bitmaps.h"
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 
-// Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
-#define OLED_RESET     4 // Reset pin # (or -1 if sharing Arduino reset pin)
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
-
 U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, /* clock=*/ SCL, /* data=*/ SDA, /* reset=*/ U8X8_PIN_NONE);   // All Boards without Reset of the Display
 
-const int randomPin = 3;
+const int randomPin = D0;
 
-const int upPin = 13;
-const int rightPin = 12;
-const int downPin = 11;
-const int leftPin = 10;
+const int upPin = D7;
+const int rightPin = D8;
+const int downPin = D9;
+const int leftPin = D10;
 
-const int ledPin = 9;
+const int ledPin = D2;
 
 int upButton;
 int rightButton;
@@ -57,8 +41,6 @@ int menuIndex = 0; //TODO: change logic so that index gets reset to 0 when leavi
 
 void setup() {
   Serial.begin(9600);
-  // Serial.begin(9600);
-  
   u8g2.begin();
 
   pinMode(upPin, INPUT);
@@ -74,7 +56,7 @@ void setup() {
 }
 
 void loop() {
-  // digitalWrite(ledPin, HIGH);
+  digitalWrite(ledPin, HIGH);
 	
   readDPad();
 
@@ -104,12 +86,8 @@ void happyBlinking() {
   u8g2.drawXBM(0, 0, 128, 64, happy);
   u8g2.sendBuffer();
   while(true) {
-    //TODO: pretty sure these 4 lines should be removed if readDPad() is running (or just call it here)
-    upButton = digitalRead(upPin);
-    rightButton = digitalRead(rightPin);
-    downButton = digitalRead(downPin);
-    leftButton = digitalRead(leftPin);
     //see if a button has been pressed
+    readDPad();
     if(upButton || rightButton || downButton || leftButton) {
       isIdle = false;
       return; //break out of function and return control to main loop()
@@ -150,36 +128,11 @@ void happyBlinking() {
   }
 }
 
-void happyBlinkingOLD() {
-  //makes the happy face 'blink'
-  randomSeed(analogRead(randomPin));  //use unused analog pin to have random seed
-  display.clearDisplay();
-  display.drawBitmap(0, 0, happy, 128, 64, 1);
-  display.display();
-  delay(random(4000, 7000));  //blink every 4-7 seconds
-  display.clearDisplay();
-  display.drawBitmap(0, 0, happy_closed_eyes, 128, 64, 1);
-  display.display();
-  delay(250);
-  int doubleBlink = random(1,5);
-  Serial.println(doubleBlink);
-  if(doubleBlink == 4) {  //0.25 chance to blink twice
-    display.clearDisplay();
-    display.drawBitmap(0, 0, happy, 128, 64, 1);
-    display.display();
-    delay(250);
-    display.clearDisplay();
-    display.drawBitmap(0, 0, happy_closed_eyes, 128, 64, 1);
-    display.display();
-    delay(250);
-  }
-}
-
 void welcome() {
   u8g2.clearBuffer();	
   // u8g2.setFont(u8g2_font_originalsans_tr);	// choose a suitable font
-  u8g2.setFont(u8g2_font_5x7_tr);	// choose a suitable font
-  u8g2.drawRFrame(0,0,128,64,4);
+  u8g2.setFont(u8g2_font_profont10_tf);	// choose a suitable font
+  u8g2.drawRFrame(0,0,128,64,4);  //draw border rounded-rectangle
   u8g2.drawStr(5,10,"Hi! My name is T.R.F");
   u8g2.drawStr(5,20,"(Tiny Robot Friend)");
   u8g2.drawStr(5,40,"Press a button to do stuff!");
@@ -189,36 +142,29 @@ void welcome() {
 }
 
 void menu() {
-  const int yFirstOffset = 4;
+  const int yFirstOffset = 10;
   const int yWordOffset = 10;
   const int xFirstOffset = 5;
   const int xWordOffset = 5;
 
   const int yBoxSpacer = 2;
   const int xBoxSpacer = 3;
-  const int boxHeight = 11;
+  const int boxHeight = 10;
   const int boxWidth = 70;
   
   // if(enterMenu) menuIndex = 0;
 
-  display.clearDisplay();
-
-  display.drawRoundRect(0, 0, 128, 64, 4, SSD1306_WHITE);
-  display.setTextSize(1);             // Normal 1:1 pixel scale
-  display.setTextColor(SSD1306_WHITE);        // Draw white text
+  u8g2.clearBuffer();
+  u8g2.setFont(u8g2_font_profont10_tf);
   
-  display.setCursor(xFirstOffset, yFirstOffset); //4
-  display.println(F("Menu"));
-  display.drawLine(5, 12, 30, 12, SSD1306_WHITE);
+  u8g2.drawRFrame(0,0,128,64,4);  //draw border rounded-rectangle
+  
+  u8g2.drawStr(xFirstOffset, yFirstOffset, "Menu"); //4
+  u8g2.drawLine(5, 12, 30, 12);
 
-  display.setCursor(xWordOffset, yFirstOffset + (yWordOffset)); //14
-  display.println(F("My face"));
-
-  display.setCursor(xWordOffset, yFirstOffset + (yWordOffset * 2)); //24
-  display.println(F("Wack-A-Mole"));
-
-  display.setCursor(xWordOffset, yFirstOffset + (yWordOffset * 3)); //34
-  display.println(F("Snake"));
+  u8g2.drawStr(xWordOffset, yFirstOffset + (yWordOffset), "My face"); //14
+  u8g2.drawStr(xWordOffset, yFirstOffset + (yWordOffset * 2), "Wack-A-Mole"); //24
+  u8g2.drawStr(xWordOffset, yFirstOffset + (yWordOffset * 3), "Snake"); //34
 
   //selection indicator
   if(upButton) {
@@ -231,7 +177,7 @@ void menu() {
   }
   if(menuIndex != 0) {
     int ybo = yBoxOffset(menuIndex, yFirstOffset, yWordOffset, yBoxSpacer);
-    display.drawRect(xBoxSpacer, ybo, boxWidth, boxHeight, SSD1306_WHITE);
+    u8g2.drawFrame(xBoxSpacer, ybo, boxWidth, boxHeight);
     //hit "enter" on the selection
     if(rightButton) {
       switch (menuIndex)
@@ -256,26 +202,23 @@ void menu() {
   
 
   //TODO: when leaving menu, set enterMenu to false
-
-  display.display();
+  u8g2.sendBuffer();
 }
 
+//helper function to get y offset for the selection box (I see why people like lambdas now)
 int yBoxOffset(int position, int yFirstOffset, int yWordOffset, int yBoxSpacer) {
-  return yFirstOffset + (yWordOffset * position) - yBoxSpacer;
+  return (yFirstOffset - 5) + (yWordOffset * position) - yBoxSpacer;  //converting to u8g2 messes up the offsets hence the random 5
 }
 
 //place holder for entering game, will probably make a class
 void wackAMole() {
-  display.clearDisplay();
-  display.drawCircle(64, 32, 5, SSD1306_WHITE);
-  display.display();
+  
 }
 
 //place holder for entering game, will probably make a class
 void snake() {
-  display.clearDisplay();
-  display.drawRect(64, 32, 5, 10, SSD1306_WHITE);
-  display.display();
+  // Snake snakeGame;
+  // delay(10000);
 }
 
 void readDPad() {
@@ -294,11 +237,3 @@ void readDPad() {
   Serial.println();
 }
 
-void displayPixelTest() {
-  display.clearDisplay();
-  for(int i=0; i <= SCREEN_HEIGHT; i++) {
-    display.drawPixel(10, i, SSD1306_WHITE);
-    display.drawPixel(15, ++i, SSD1306_WHITE);
-    display.display();
-  }
-}
