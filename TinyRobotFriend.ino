@@ -11,7 +11,9 @@
 #include <SPI.h>
 #include <Wire.h>
 
-#include "Snake/Snake.h"
+#include "Snake.h"
+#include "SnakeBoard.h"
+
 #include "bitmaps.h"
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
@@ -217,7 +219,7 @@ void wackAMole() {
 
 //place holder for entering game, will probably make a class
 void snake() {
-  // Snake snakeGame;
+  Snake test(u8g2);
   // delay(10000);
 }
 
@@ -236,4 +238,3 @@ void readDPad() {
   Serial.print(leftButton);
   Serial.println();
 }
-
