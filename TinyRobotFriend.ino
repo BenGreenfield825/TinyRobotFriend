@@ -14,6 +14,8 @@
 #include "Snake.h"
 #include "SnakeBoard.h"
 
+#include "DirectionalPad.h"
+
 #include "bitmaps.h"
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
@@ -35,6 +37,9 @@ int rightButton;
 int downButton;
 int leftButton;
 
+DirectionalPad* dPad;
+int* dPadArr;
+
 //used for switching to faces or other screens
 bool isIdle = 1; //start as idle (show faces)
 
@@ -44,6 +49,8 @@ int menuIndex = 0; //TODO: change logic so that index gets reset to 0 when leavi
 void setup() {
   Serial.begin(9600);
   u8g2.begin();
+
+  dPad = new DirectionalPad();
 
   pinMode(upPin, INPUT);
   pinMode(rightPin, INPUT);
@@ -58,18 +65,21 @@ void setup() {
 }
 
 void loop() {
+  Snake test(u8g2);
   digitalWrite(ledPin, HIGH);
-	
-  readDPad();
 
-  if(isIdle) {
-    //switch control to happyBlinking
-    happyBlinking();
-  }
-  else {
-    // enterMenu = true;
-    menu(); //try switching to this just as a test
-  }
+  // readDPad();
+	
+  // readDPad();
+
+  // if(isIdle) {
+  //   //switch control to happyBlinking
+  //   happyBlinking();
+  // }
+  // else {
+  //   // enterMenu = true;
+  //   menu(); //try switching to this just as a test
+  // }
 }
 
 void bitmapTest() {
@@ -224,17 +234,10 @@ void snake() {
 }
 
 void readDPad() {
-  upButton = digitalRead(upPin);
-  rightButton = digitalRead(rightPin);
-  downButton = digitalRead(downPin);
-  leftButton = digitalRead(leftPin);
-  Serial.print("Up: ");
-  Serial.print(upButton);
-  Serial.print(", Right: ");
-  Serial.print(rightButton);
-  Serial.print(", Down: ");
-  Serial.print(downButton);
-  Serial.print(", Left: ");
-  Serial.print(leftButton);
-  Serial.println();
+  //I know this is gross i'm sorry
+  dPadArr = dPad->read();
+  upButton = dPadArr[0];
+  rightButton = dPadArr[1];
+  downButton = dPadArr[2];
+  leftButton = dPadArr[3];
 }
