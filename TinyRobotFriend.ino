@@ -177,6 +177,7 @@ void menu() {
   u8g2.drawStr(xWordOffset, yFirstOffset + (yWordOffset), "My face"); //14
   u8g2.drawStr(xWordOffset, yFirstOffset + (yWordOffset * 2), "Wack-A-Mole"); //24
   u8g2.drawStr(xWordOffset, yFirstOffset + (yWordOffset * 3), "Snake"); //34
+  //TODO: menu option for "jokes"/puns - since this will be for Botomation lets add some bad jokes!
 
   //selection indicator
   if(upButton) {

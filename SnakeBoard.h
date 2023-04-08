@@ -103,7 +103,8 @@ SnakeBoard::SnakeBoard(U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2)
             prevDir[0] = 1;
             prevDir[1] = -1;
             //TODO: future format? Will need to check for out of bounds, also setting old squares back to 0
-            grid[headPos[0] - 1][headPos[1]] = 0;
+            grid[headPos[0] - 1][headPos[1]] = 1;
+            headPos[0]--;
         }
         else if (rightButton)
         {
