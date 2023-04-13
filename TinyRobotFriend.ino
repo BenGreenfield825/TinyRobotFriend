@@ -13,15 +13,14 @@
 
 #include "Snake.h"
 #include "SnakeBoard.h"
-
 #include "DirectionalPad.h"
-
+#include "Joke.h"
 #include "bitmaps.h"
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 
-U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, /* clock=*/ SCL, /* data=*/ SDA, /* reset=*/ U8X8_PIN_NONE);   // All Boards without Reset of the Display
+U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, /* clock=*/SCL, /* data=*/SDA, /* reset=*/U8X8_PIN_NONE); // All Boards without Reset of the Display
 
 const int randomPin = D0;
 
@@ -37,16 +36,17 @@ int rightButton;
 int downButton;
 int leftButton;
 
-DirectionalPad* dPad;
-int* dPadArr;
+DirectionalPad *dPad;
+int *dPadArr;
 
-//used for switching to faces or other screens
-bool isIdle = 1; //start as idle (show faces)
+// used for switching to faces or other screens
+bool isIdle = 1; // start as idle (show faces)
 
-bool enterMenu = false; //check to see if index should be zero
-int menuIndex = 0; //TODO: change logic so that index gets reset to 0 when leaving and re-entering menu
+bool enterMenu = false; // check to see if index should be zero
+int menuIndex = 0;      // TODO: change logic so that index gets reset to 0 when leaving and re-entering menu
 
-void setup() {
+void setup()
+{
   Serial.begin(9600);
   u8g2.begin();
 
@@ -64,64 +64,73 @@ void setup() {
   // welcome();
 }
 
-void loop() {
-  Snake test(u8g2);
+void loop()
+{
+  // Snake test(u8g2);
   digitalWrite(ledPin, HIGH);
 
-  // readDPad();
-	
-  // readDPad();
+  readDPad();
 
-  // if(isIdle) {
-  //   //switch control to happyBlinking
-  //   happyBlinking();
-  // }
-  // else {
-  //   // enterMenu = true;
-  //   menu(); //try switching to this just as a test
-  // }
+  if (isIdle)
+  {
+    // switch control to happyBlinking
+    happyBlinking();
+  }
+  else
+  {
+    // enterMenu = true;
+    menu(); // try switching to this just as a test
+  }
 }
 
-void bitmapTest() {
+void bitmapTest()
+{
   u8g2.clearBuffer();
   u8g2.drawXBM(0, 0, 128, 64, happy_closed_eyes);
   u8g2.sendBuffer();
 }
 
-void happyBlinking() {
-  //makes the happy face 'blink'
+void happyBlinking()
+{
+  // makes the happy face 'blink'
   bool waiting = false;
   int randomMillis;
   unsigned long startTime;
-  //start with normal face
+  // start with normal face
   u8g2.clearBuffer();
   u8g2.drawXBM(0, 0, 128, 64, happy);
   u8g2.sendBuffer();
-  while(true) {
-    //see if a button has been pressed
+  while (true)
+  {
+    // see if a button has been pressed
     readDPad();
-    if(upButton || rightButton || downButton || leftButton) {
+    if (upButton || rightButton || downButton || leftButton)
+    {
       isIdle = false;
-      return; //break out of function and return control to main loop()
+      return; // break out of function and return control to main loop()
     }
 
-    if(!waiting) {
-      randomSeed(analogRead(randomPin));  //use unused analog pin to have random seed
+    if (!waiting)
+    {
+      randomSeed(analogRead(randomPin)); // use unused analog pin to have random seed
       randomMillis = random(4, 7);
-      randomMillis *= 1000; //convert a number 4-7 to seconds format (i.e 5 -> 5000milliseconds)
+      randomMillis *= 1000; // convert a number 4-7 to seconds format (i.e 5 -> 5000milliseconds)
       waiting = true;
-      startTime = millis(); //start count time now to compare to next loop
+      startTime = millis(); // start count time now to compare to next loop
     }
-    else {
-      if(millis() >= startTime + randomMillis) {  //if the time right now is x seconds more than when we started then blink
-        int doubleBlink = random(3,5); //0.25 chance to blink twice
+    else
+    {
+      if (millis() >= startTime + randomMillis)
+      {                                 // if the time right now is x seconds more than when we started then blink
+        int doubleBlink = random(3, 5); // 0.25 chance to blink twice
         int blinks;
         (doubleBlink == 4) ? blinks = 2 : blinks = 1;
-        for(int i=0; i < blinks; i++) {
+        for (int i = 0; i < blinks; i++)
+        {
           u8g2.clearBuffer();
           u8g2.drawXBM(0, 0, 128, 64, happy_closed_eyes);
           u8g2.sendBuffer();
-          //TODO: double blinking is messed up, trying to do another millis eventually breaks it
+          // TODO: double blinking is messed up, trying to do another millis eventually breaks it
           delay(150);
           // int blinkingTime = millis();
           // while(millis() <= blinkingTime + 250) {}
@@ -129,31 +138,34 @@ void happyBlinking() {
           // display.drawBitmap(0, 0, happy, 128, 64, 1);
           // display.display();
         }
-        waiting = false; //set to false so next loop we generate a new timer
+        waiting = false; // set to false so next loop we generate a new timer
       }
-      else{ //otherwise keep looping and normal face until time is met
+      else
+      { // otherwise keep looping and normal face until time is met
         u8g2.clearBuffer();
         u8g2.drawXBM(0, 0, 128, 64, happy);
         u8g2.sendBuffer();
-      }     
+      }
     }
   }
 }
 
-void welcome() {
-  u8g2.clearBuffer();	
+void welcome()
+{
+  u8g2.clearBuffer();
   // u8g2.setFont(u8g2_font_originalsans_tr);	// choose a suitable font
-  u8g2.setFont(u8g2_font_profont10_tf);	// choose a suitable font
-  u8g2.drawRFrame(0,0,128,64,4);  //draw border rounded-rectangle
-  u8g2.drawStr(5,10,"Hi! My name is T.R.F");
-  u8g2.drawStr(5,20,"(Tiny Robot Friend)");
-  u8g2.drawStr(5,40,"Press a button to do stuff!");
+  u8g2.setFont(u8g2_font_profont10_tf); // choose a suitable font
+  u8g2.drawRFrame(0, 0, 128, 64, 4);    // draw border rounded-rectangle
+  u8g2.drawStr(5, 10, "Hi! My name is T.R.F");
+  u8g2.drawStr(5, 20, "(Tiny Robot Friend)");
+  u8g2.drawStr(5, 40, "Press a button to do stuff!");
   u8g2.sendBuffer();
 
   delay(5000);
 }
 
-void menu() {
+void menu()
+{
   const int yFirstOffset = 10;
   const int yWordOffset = 10;
   const int xFirstOffset = 5;
@@ -163,36 +175,43 @@ void menu() {
   const int xBoxSpacer = 3;
   const int boxHeight = 10;
   const int boxWidth = 70;
-  
+
   // if(enterMenu) menuIndex = 0;
 
   u8g2.clearBuffer();
   u8g2.setFont(u8g2_font_profont10_tf);
-  
-  u8g2.drawRFrame(0,0,128,64,4);  //draw border rounded-rectangle
-  
-  u8g2.drawStr(xFirstOffset, yFirstOffset, "Menu"); //4
+
+  u8g2.drawRFrame(0, 0, 128, 64, 4); // draw border rounded-rectangle
+
+  u8g2.drawStr(xFirstOffset, yFirstOffset, "Menu"); // 4
   u8g2.drawLine(5, 12, 30, 12);
 
-  u8g2.drawStr(xWordOffset, yFirstOffset + (yWordOffset), "My face"); //14
-  u8g2.drawStr(xWordOffset, yFirstOffset + (yWordOffset * 2), "Wack-A-Mole"); //24
-  u8g2.drawStr(xWordOffset, yFirstOffset + (yWordOffset * 3), "Snake"); //34
-  //TODO: menu option for "jokes"/puns - since this will be for Botomation lets add some bad jokes!
+  u8g2.drawStr(xWordOffset, yFirstOffset + (yWordOffset), "My face");         // 14
+  u8g2.drawStr(xWordOffset, yFirstOffset + (yWordOffset * 2), "Wack-A-Mole"); // 24
+  u8g2.drawStr(xWordOffset, yFirstOffset + (yWordOffset * 3), "Snake");       // 34
+  u8g2.drawStr(xWordOffset, yFirstOffset + (yWordOffset * 4), "Tell me a joke");
+  // TODO: menu option for "jokes"/puns - since this will be for Botomation lets add some bad jokes!
 
-  //selection indicator
-  if(upButton) {
-    if(menuIndex > 1) menuIndex--;
-    delay(100); //TODO: make sure this is okay later lol
+  // selection indicator
+  if (upButton)
+  {
+    if (menuIndex > 1)
+      menuIndex--;
+    delay(100); // TODO: make sure this is okay later lol
   }
-  else if (downButton) {
-    if(menuIndex < 3) menuIndex++;
+  else if (downButton)
+  {
+    if (menuIndex < 4)
+      menuIndex++;
     delay(100);
   }
-  if(menuIndex != 0) {
+  if (menuIndex != 0)
+  {
     int ybo = yBoxOffset(menuIndex, yFirstOffset, yWordOffset, yBoxSpacer);
     u8g2.drawFrame(xBoxSpacer, ybo, boxWidth, boxHeight);
-    //hit "enter" on the selection
-    if(rightButton) {
+    // hit "enter" on the selection
+    if (rightButton)
+    {
       switch (menuIndex)
       {
       case 1:
@@ -206,36 +225,46 @@ void menu() {
       case 3:
         snake();
         break;
-      
+
+      case 4:
+        jokes();
+        break;
+
       default:
         break;
       }
     }
   }
-  
 
-  //TODO: when leaving menu, set enterMenu to false
+  // TODO: when leaving menu, set enterMenu to false
   u8g2.sendBuffer();
 }
 
-//helper function to get y offset for the selection box (I see why people like lambdas now)
-int yBoxOffset(int position, int yFirstOffset, int yWordOffset, int yBoxSpacer) {
-  return (yFirstOffset - 5) + (yWordOffset * position) - yBoxSpacer;  //converting to u8g2 messes up the offsets hence the random 5
+// helper function to get y offset for the selection box (I see why people like lambdas now)
+int yBoxOffset(int position, int yFirstOffset, int yWordOffset, int yBoxSpacer)
+{
+  return (yFirstOffset - 5) + (yWordOffset * position) - yBoxSpacer; // converting to u8g2 messes up the offsets hence the random 5
 }
 
-//place holder for entering game, will probably make a class
-void wackAMole() {
-  
+// place holder for entering game, will probably make a class
+void wackAMole()
+{
 }
 
-//place holder for entering game, will probably make a class
-void snake() {
-  Snake test(u8g2);
-  // delay(10000);
+// very much a WIP lol
+void snake()
+{
+  Snake snakeGame(u8g2);
 }
 
-void readDPad() {
-  //I know this is gross i'm sorry
+void jokes()
+{
+  Joke joke(u8g2);
+}
+
+void readDPad()
+{
+  // I know this is gross i'm sorry
   dPadArr = dPad->read();
   upButton = dPadArr[0];
   rightButton = dPadArr[1];
