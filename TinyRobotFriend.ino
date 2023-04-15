@@ -67,8 +67,9 @@ void setup()
 void loop()
 {
   // Snake test(u8g2);
+  // Joke joke(&u8g2);
   digitalWrite(ledPin, HIGH);
-
+  
   readDPad();
 
   if (isIdle)
@@ -259,7 +260,7 @@ void snake()
 
 void jokes()
 {
-  Joke joke(u8g2);
+   Joke joke(&u8g2);
 }
 
 void readDPad()
