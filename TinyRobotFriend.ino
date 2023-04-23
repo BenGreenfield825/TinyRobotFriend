@@ -29,8 +29,6 @@ const int rightPin = D8;
 const int downPin = D9;
 const int leftPin = D10;
 
-const int ledPin = D2;
-
 int upButton;
 int rightButton;
 int downButton;
@@ -57,8 +55,6 @@ void setup()
   pinMode(downPin, INPUT);
   pinMode(leftPin, INPUT);
 
-  pinMode(ledPin, OUTPUT);
-
   // Clear the buffer
   u8g2.clearBuffer();
   // welcome();
@@ -68,7 +64,6 @@ void loop()
 {
   // Snake test(u8g2);
   // Joke joke(&u8g2);
-  digitalWrite(ledPin, HIGH);
   
   readDPad();
 
@@ -80,7 +75,7 @@ void loop()
   else
   {
     // enterMenu = true;
-    menu(); // try switching to this just as a test
+    menu();
   }
 }
 
@@ -131,13 +126,7 @@ void happyBlinking()
           u8g2.clearBuffer();
           u8g2.drawXBM(0, 0, 128, 64, happy_closed_eyes);
           u8g2.sendBuffer();
-          // TODO: double blinking is messed up, trying to do another millis eventually breaks it
           delay(150);
-          // int blinkingTime = millis();
-          // while(millis() <= blinkingTime + 250) {}
-          // display.clearDisplay();
-          // display.drawBitmap(0, 0, happy, 128, 64, 1);
-          // display.display();
         }
         waiting = false; // set to false so next loop we generate a new timer
       }
@@ -191,7 +180,6 @@ void menu()
   u8g2.drawStr(xWordOffset, yFirstOffset + (yWordOffset * 2), "Wack-A-Mole"); // 24
   u8g2.drawStr(xWordOffset, yFirstOffset + (yWordOffset * 3), "Snake");       // 34
   u8g2.drawStr(xWordOffset, yFirstOffset + (yWordOffset * 4), "Tell me a joke");
-  // TODO: menu option for "jokes"/puns - since this will be for Botomation lets add some bad jokes!
 
   // selection indicator
   if (upButton)
@@ -211,7 +199,7 @@ void menu()
     int ybo = yBoxOffset(menuIndex, yFirstOffset, yWordOffset, yBoxSpacer);
     u8g2.drawFrame(xBoxSpacer, ybo, boxWidth, boxHeight);
     // hit "enter" on the selection
-    if (rightButton)
+    if (rightButton || leftButton)
     {
       switch (menuIndex)
       {
