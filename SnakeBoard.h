@@ -45,14 +45,14 @@ private:
     bool isDead = false;
 
 public:
-    SnakeBoard(U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2);
+    SnakeBoard(U8G2_SSD1312_128X64_NONAME_F_SW_I2C u8g2);
     void parseDPad();
     void food();
     bool eatFood();
-    void drawScreen(U8G2_SSD1306_128X64_NONAME_F_SW_I2C u);
+    void drawScreen(U8G2_SSD1312_128X64_NONAME_F_SW_I2C u);
 };
 
-SnakeBoard::SnakeBoard(U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2)
+SnakeBoard::SnakeBoard(U8G2_SSD1312_128X64_NONAME_F_SW_I2C u8g2)
 {
     // first index represents vertical or horizontal, second index represents direction (0, 1 -> horizontal, right)
     int prevDir[2] = {0, 1};
@@ -138,7 +138,7 @@ SnakeBoard::SnakeBoard(U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2)
     }
 }
 
-void SnakeBoard::drawScreen(U8G2_SSD1306_128X64_NONAME_F_SW_I2C u)
+void SnakeBoard::drawScreen(U8G2_SSD1312_128X64_NONAME_F_SW_I2C u)
 {
     for (int r = 0; r < rows; r++)
     {

@@ -8,6 +8,9 @@
 #include <Wire.h>
 #endif
 
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
 #include <SPI.h>
 #include <Wire.h>
 
@@ -21,6 +24,10 @@
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 
 U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, /* clock=*/SCL, /* data=*/SDA, /* reset=*/U8X8_PIN_NONE); // All Boards without Reset of the Display
+
+#define OLED_RESET     4 // Reset pin # (or -1 if sharing Arduino reset pin)
+#define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 const int randomPin = D0;
 

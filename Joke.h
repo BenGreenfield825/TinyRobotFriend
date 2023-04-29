@@ -12,7 +12,7 @@
 class Joke
 {
 private:
-    U8G2_SSD1306_128X64_NONAME_F_SW_I2C *u8g2;
+    U8G2_SSD1312_128X64_NONAME_F_SW_I2C *u8g2;
 
     const int randomPin = D0;
     DirectionalPad *dPad;
@@ -123,13 +123,13 @@ private:
         "What does a clock do when it's hungry? It goes back for seconds."}; // This is max length to fit on screen
 
 public:
-    Joke(U8G2_SSD1306_128X64_NONAME_F_SW_I2C *u8g2Obj);
+    Joke(U8G2_SSD1312_128X64_NONAME_F_SW_I2C *u8g2Obj);
     void parseDPad();
     const char *processString(arduino::String currentJoke);
     void writeJokeToScreen(const char *currentJoke);
 };
 
-Joke::Joke(U8G2_SSD1306_128X64_NONAME_F_SW_I2C *u8g2Obj)
+Joke::Joke(U8G2_SSD1312_128X64_NONAME_F_SW_I2C *u8g2Obj)
 {
     u8g2 = u8g2Obj;
     u8g2->clearBuffer();

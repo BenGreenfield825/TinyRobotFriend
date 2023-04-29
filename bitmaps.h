@@ -1,16 +1,16 @@
 #ifndef BITMAPS_H
 #define BITMAPS_H
 
-extern const unsigned char testMap[] PROGMEM = {
-  B00000001, B10000000,
-  B00000001, B10000000,
-  B00000001, B10000000,
-  B00000001, B10000000,
-  B00000001, B10000000,
-  B01110111, B01110111,
-  B01010101, B01010101,
-  B01110111, B01110111,
-};
+// extern const unsigned char testMap[] PROGMEM = {
+//   B00000001, B10000000,
+//   B00000001, B10000000,
+//   B00000001, B10000000,
+//   B00000001, B10000000,
+//   B00000001, B10000000,
+//   B01110111, B01110111,
+//   B01010101, B01010101,
+//   B01110111, B01110111,
+// };
 
 // 'default', 128x64px
 extern const unsigned char default_face []  = {
