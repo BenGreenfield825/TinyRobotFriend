@@ -2,7 +2,7 @@
 #define Joke_H
 
 #include "Arduino.h"
-#include "U8g2lib.h"
+// #include "//u8g2lib.h"
 
 #include "DirectionalPad.h"
 
@@ -12,7 +12,8 @@
 class Joke
 {
 private:
-    U8G2_SSD1312_128X64_NONAME_F_SW_I2C *u8g2;
+    // //u8g2_SSD1306_128X64_NONAME_F_SW_I2C *//u8g2;
+    Adafruit_SSD1306 *display;
 
     const int randomPin = D0;
     DirectionalPad *dPad;
@@ -22,12 +23,12 @@ private:
     int downButton = 0;
     int leftButton = 0;
 
-    int lineStart = 15; // default starting value
+    int lineStart = 5; // default starting value
     int linePos = lineStart;
     int lineSpacing = 10;
 
     // I'd rather put this in a txt file, but just having them in the class makes life simpler
-    std::vector<const char *> jokeList = { // u8g2 expects text as const char* which is dumb
+    std::vector<const char *> jokeList = { // //u8g2 expects text as const char* which is dumb
         "Why did Adele cross the road? To say hello from the other side.",
         "What kind of concert only costs 45 cents? A 50 Cent concert featuring Nickelback.",
         "What did the grape say when it got crushed? Nothing, it just let out a little wine.",
@@ -120,37 +121,48 @@ private:
         "Why should you never trust a train? They have loco motives.",
         "A cabbage and celery walk into a bar and the cabbage gets served first because he was a head.",
         "What's America's favorite soda? Mini soda.",
-        "What does a clock do when it's hungry? It goes back for seconds."}; // This is max length to fit on screen
+        "What does a clock do when it's hungry? It goes back for seconds."};
 
 public:
-    Joke(U8G2_SSD1312_128X64_NONAME_F_SW_I2C *u8g2Obj);
+    Joke(Adafruit_SSD1306 *displayObj);
     void parseDPad();
     const char *processString(arduino::String currentJoke);
     void writeJokeToScreen(const char *currentJoke);
 };
 
-Joke::Joke(U8G2_SSD1312_128X64_NONAME_F_SW_I2C *u8g2Obj)
+Joke::Joke(Adafruit_SSD1306 *displayObj)
 {
-    u8g2 = u8g2Obj;
-    u8g2->clearBuffer();
-    u8g2->setFont(u8g2_font_profont10_tf);
+    display = displayObj;
+    display->clearDisplay();
     dPad = new DirectionalPad();
     randomSeed(analogRead(randomPin));
     int randomIndex = random(0, jokeList.size());
-    u8g2->drawStr(10, 10, jokeList[randomIndex]);
+
+    //    display->setFont(&u8g2_font_profont10_tf);
+    display->setTextSize(1);              // Normal 1:1 pixel scale
+    display->setTextColor(SSD1306_WHITE); // Draw white text
+    display->setCursor(5, 5);             // Start at top-left corner
+    // //u8g2->drawStr(10, 10, jokeList[randomIndex]);
+    //    display->write(jokeList[randomIndex]);
+    //    display->display();
     while (true)
     {
         parseDPad();
         delay(100); // prevent button freaking out
         if (upButton || rightButton || downButton || leftButton)
         {
-            u8g2->clearBuffer();
+            // u8g2->clearBuffer();
+            display->clearDisplay();
             randomSeed(analogRead(randomPin));
             randomIndex = random(0, jokeList.size());
             const char *currentJoke = jokeList[randomIndex];
-            writeJokeToScreen(currentJoke);
-            u8g2->drawRFrame(0, 0, 128, 64, 4); // draw border rounded-rectangle
-            u8g2->sendBuffer();
+            display->setCursor(5, 5);
+            display->write(currentJoke);
+            //            writeJokeToScreen(currentJoke);
+            //            //u8g2->drawRFrame(0, 0, 128, 64, 4); // draw border rounded-rectangle
+            // display->drawRect(0, 0, 128, 64, 1);
+            // u8g2->sendBuffer();
+            display->display();
         }
     }
 }
@@ -176,7 +188,9 @@ void Joke::writeJokeToScreen(const char *currentJoke)
     if (strlen(currentJoke) > 22) // 22 characters is just about the edge of the screen
     {
         const char *processedStr = processString(currentJoke);
-        u8g2->drawStr(10, linePos, processedStr);
+        display->setCursor(5, linePos);
+        display->write(processedStr);
+        // u8g2->drawStr(10, linePos, processedStr);
         arduino::String temp = currentJoke;
         temp = temp.substring(22, strlen(currentJoke));
         const char *remainingStr = temp.c_str();
@@ -186,7 +200,9 @@ void Joke::writeJokeToScreen(const char *currentJoke)
     }
     else
     {
-        u8g2->drawStr(10, linePos, currentJoke);
+        // u8g2->drawStr(10, linePos, currentJoke);
+        display->setCursor(5, linePos);
+        display->write(currentJoke);
         linePos = lineStart; // reset the linePos (if we hit this else, we should be done)
         return;
     }

@@ -1,18 +1,11 @@
 #include <Arduino.h>
-#include <U8g2lib.h>
 
-#ifdef U8X8_HAVE_HW_SPI
 #include <SPI.h>
-#endif
-#ifdef U8X8_HAVE_HW_I2C
 #include <Wire.h>
-#endif
-
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-
-#include <SPI.h>
-#include <Wire.h>
+#include <Fonts/FreeMonoBoldOblique12pt7b.h>
+#include <Fonts/FreeSerif9pt7b.h>
 
 #include "Snake.h"
 #include "SnakeBoard.h"
@@ -20,12 +13,9 @@
 #include "Joke.h"
 #include "bitmaps.h"
 
-#define SCREEN_WIDTH 128 // OLED display width, in pixels
-#define SCREEN_HEIGHT 64 // OLED display height, in pixels
-
-U8G2_SSD1306_128X64_NONAME_F_SW_I2C u8g2(U8G2_R0, /* clock=*/SCL, /* data=*/SDA, /* reset=*/U8X8_PIN_NONE); // All Boards without Reset of the Display
-
-#define OLED_RESET     4 // Reset pin # (or -1 if sharing Arduino reset pin)
+#define SCREEN_WIDTH 128    // OLED display width, in pixels
+#define SCREEN_HEIGHT 64    // OLED display height, in pixels
+#define OLED_RESET 4        // Reset pin # (or -1 if sharing Arduino reset pin)
 #define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
@@ -50,15 +40,21 @@ bool isIdle = 1; // start as idle (show faces)
 bool enterMenu = false; // check to see if index should be zero
 int menuIndex = 0;      // TODO: change logic so that index gets reset to 0 when leaving and re-entering menu
 
-
-//TODO: Add more faces: Add things like sleepy face if left idle for x seconds; Dizzy face if shaken? Seeed board might have thing for that
-//      Actually work on the games - Wack a Mole should be easy-ish, no hit button - just hover over the mole to score
-//      Snake: look into queue based system for the grid?
+// TODO: Add more faces: Add things like sleepy face if left idle for x seconds; Dizzy face if shaken? Seeed board might have thing for that
+//       Actually work on the games - Wack a Mole should be easy-ish, no hit button - just hover over the mole to score
+//       Snake: look into queue based system for the grid?
+//       LED: Seeed board has nice bright LED, let use it
 
 void setup()
 {
   Serial.begin(9600);
-  u8g2.begin();
+  if (!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS))
+  {
+    Serial.println(F("SSD1306 allocation failed"));
+    for (;;)
+      ; // Don't proceed, loop forever
+  }
+  display.clearDisplay();
 
   dPad = new DirectionalPad();
 
@@ -66,17 +62,13 @@ void setup()
   pinMode(rightPin, INPUT);
   pinMode(downPin, INPUT);
   pinMode(leftPin, INPUT);
-
-  // Clear the buffer
-  u8g2.clearBuffer();
-  // welcome();
 }
 
 void loop()
 {
   // Snake test(u8g2);
-  // Joke joke(&u8g2);
-  
+  // Joke joke(&display);
+
   readDPad();
 
   if (isIdle)
@@ -93,9 +85,12 @@ void loop()
 
 void bitmapTest()
 {
-  u8g2.clearBuffer();
-  u8g2.drawXBM(0, 0, 128, 64, happy_closed_eyes);
-  u8g2.sendBuffer();
+  // u8g2.clearBuffer();
+  // display.clearDisplay();
+  display.drawBitmap(0, 0, happy, 128, 64, 1);
+  // u8g2.drawXBM(0, 0, 128, 64, happy_closed_eyes);
+  display.display();
+  // u8g2.sendBuffer();
 }
 
 void happyBlinking()
@@ -105,9 +100,12 @@ void happyBlinking()
   int randomMillis;
   unsigned long startTime;
   // start with normal face
-  u8g2.clearBuffer();
-  u8g2.drawXBM(0, 0, 128, 64, happy);
-  u8g2.sendBuffer();
+  display.clearDisplay();
+  display.drawBitmap(0, 0, happy, SCREEN_WIDTH, SCREEN_HEIGHT, 1);
+  display.display();
+  //   u8g2.clearBuffer();
+  //   u8g2.drawXBM(0, 0, 128, 64, happy);
+  //   u8g2.sendBuffer();
   while (true)
   {
     // see if a button has been pressed
@@ -135,63 +133,57 @@ void happyBlinking()
         (doubleBlink == 4) ? blinks = 2 : blinks = 1;
         for (int i = 0; i < blinks; i++)
         {
-          u8g2.clearBuffer();
-          u8g2.drawXBM(0, 0, 128, 64, happy_closed_eyes);
-          u8g2.sendBuffer();
+          //           u8g2.clearBuffer();
+          //           u8g2.drawXBM(0, 0, 128, 64, happy_closed_eyes);
+          //           u8g2.sendBuffer();
+          display.clearDisplay();
+          display.drawBitmap(0, 0, happy_closed_eyes, SCREEN_WIDTH, SCREEN_HEIGHT, 1);
+          display.display();
           delay(150);
         }
         waiting = false; // set to false so next loop we generate a new timer
       }
       else
       { // otherwise keep looping and normal face until time is met
-        u8g2.clearBuffer();
-        u8g2.drawXBM(0, 0, 128, 64, happy);
-        u8g2.sendBuffer();
+        display.clearDisplay();
+        display.drawBitmap(0, 0, happy, SCREEN_WIDTH, SCREEN_HEIGHT, 1);
+        display.display();
+        ;
       }
     }
   }
 }
 
-void welcome()
-{
-  u8g2.clearBuffer();
-  // u8g2.setFont(u8g2_font_originalsans_tr);	// choose a suitable font
-  u8g2.setFont(u8g2_font_profont10_tf); // choose a suitable font
-  u8g2.drawRFrame(0, 0, 128, 64, 4);    // draw border rounded-rectangle
-  u8g2.drawStr(5, 10, "Hi! My name is T.R.F");
-  u8g2.drawStr(5, 20, "(Tiny Robot Friend)");
-  u8g2.drawStr(5, 40, "Press a button to do stuff!");
-  u8g2.sendBuffer();
-
-  delay(5000);
-}
-
 void menu()
 {
-  const int yFirstOffset = 10;
+  const int yFirstOffset = 5;
   const int yWordOffset = 10;
   const int xFirstOffset = 5;
   const int xWordOffset = 5;
 
-  const int yBoxSpacer = 2;
+  const int yBoxSpacer = 4;
   const int xBoxSpacer = 3;
   const int boxHeight = 10;
-  const int boxWidth = 70;
+  const int boxWidth = 86;
 
   // if(enterMenu) menuIndex = 0;
 
-  u8g2.clearBuffer();
-  u8g2.setFont(u8g2_font_profont10_tf);
+  display.clearDisplay();
+  display.setTextColor(SSD1306_WHITE);
+  display.setTextSize(1);
+  display.drawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 1);
+  display.setCursor(xFirstOffset, yFirstOffset);
+  display.write("Menu");
+  display.drawLine(5, 12, 30, 12, 1);
 
-  u8g2.drawRFrame(0, 0, 128, 64, 4); // draw border rounded-rectangle
-
-  u8g2.drawStr(xFirstOffset, yFirstOffset, "Menu"); // 4
-  u8g2.drawLine(5, 12, 30, 12);
-
-  u8g2.drawStr(xWordOffset, yFirstOffset + (yWordOffset), "My face");         // 14
-  u8g2.drawStr(xWordOffset, yFirstOffset + (yWordOffset * 2), "Wack-A-Mole"); // 24
-  u8g2.drawStr(xWordOffset, yFirstOffset + (yWordOffset * 3), "Snake");       // 34
-  u8g2.drawStr(xWordOffset, yFirstOffset + (yWordOffset * 4), "Tell me a joke");
+  display.setCursor(xWordOffset, yFirstOffset + (yWordOffset));
+  display.write("My face");
+  display.setCursor(xWordOffset, yFirstOffset + (yWordOffset * 2));
+  display.write("Wack-A-Mole");
+  display.setCursor(xWordOffset, yFirstOffset + (yWordOffset * 3));
+  display.write("Snake");
+  display.setCursor(xWordOffset, yFirstOffset + (yWordOffset * 4));
+  display.write("Tell me a joke");
 
   // selection indicator
   if (upButton)
@@ -209,7 +201,7 @@ void menu()
   if (menuIndex != 0)
   {
     int ybo = yBoxOffset(menuIndex, yFirstOffset, yWordOffset, yBoxSpacer);
-    u8g2.drawFrame(xBoxSpacer, ybo, boxWidth, boxHeight);
+    display.drawRect(xBoxSpacer, ybo, boxWidth, boxHeight, 1);
     // hit "enter" on the selection
     if (rightButton || leftButton)
     {
@@ -237,14 +229,14 @@ void menu()
     }
   }
 
-  // TODO: when leaving menu, set enterMenu to false
-  u8g2.sendBuffer();
+  // TODO: when leaving menu, set enterMenu to false?
+  display.display();
 }
 
 // helper function to get y offset for the selection box (I see why people like lambdas now)
 int yBoxOffset(int position, int yFirstOffset, int yWordOffset, int yBoxSpacer)
 {
-  return (yFirstOffset - 5) + (yWordOffset * position) - yBoxSpacer; // converting to u8g2 messes up the offsets hence the random 5
+  return (yFirstOffset + 2) + (yWordOffset * position) - yBoxSpacer; // idry I add the first offset but i need it whoops
 }
 
 // place holder for entering game, will probably make a class
@@ -255,12 +247,12 @@ void wackAMole()
 // very much a WIP lol
 void snake()
 {
-  Snake snakeGame(u8g2);
+  //   Snake snakeGame(u8g2);
 }
 
 void jokes()
 {
-   Joke joke(&u8g2);
+  Joke joke(&display);
 }
 
 void readDPad()
