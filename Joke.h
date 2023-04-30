@@ -12,7 +12,6 @@
 class Joke
 {
 private:
-    // //u8g2_SSD1306_128X64_NONAME_F_SW_I2C *//u8g2;
     Adafruit_SSD1306 *display;
 
     const int randomPin = D0;
@@ -28,7 +27,7 @@ private:
     int lineSpacing = 10;
 
     // I'd rather put this in a txt file, but just having them in the class makes life simpler
-    std::vector<const char *> jokeList = { // //u8g2 expects text as const char* which is dumb
+    std::vector<const char *> jokeList = { //probably doesn't need to be const char since I am not using u8g2 anymore but oh well
         "Why did Adele cross the road? To say hello from the other side.",
         "What kind of concert only costs 45 cents? A 50 Cent concert featuring Nickelback.",
         "What did the grape say when it got crushed? Nothing, it just let out a little wine.",
@@ -138,30 +137,24 @@ Joke::Joke(Adafruit_SSD1306 *displayObj)
     randomSeed(analogRead(randomPin));
     int randomIndex = random(0, jokeList.size());
 
-    //    display->setFont(&u8g2_font_profont10_tf);
     display->setTextSize(1);              // Normal 1:1 pixel scale
     display->setTextColor(SSD1306_WHITE); // Draw white text
     display->setCursor(5, 5);             // Start at top-left corner
-    // //u8g2->drawStr(10, 10, jokeList[randomIndex]);
-    //    display->write(jokeList[randomIndex]);
-    //    display->display();
     while (true)
     {
         parseDPad();
         delay(100); // prevent button freaking out
         if (upButton || rightButton || downButton || leftButton)
         {
-            // u8g2->clearBuffer();
             display->clearDisplay();
             randomSeed(analogRead(randomPin));
             randomIndex = random(0, jokeList.size());
             const char *currentJoke = jokeList[randomIndex];
             display->setCursor(5, 5);
             display->write(currentJoke);
-            //            writeJokeToScreen(currentJoke);
-            //            //u8g2->drawRFrame(0, 0, 128, 64, 4); // draw border rounded-rectangle
+            // adafruit library actually does the line splitting automatically, can probably simplify and remove these functions
+            // writeJokeToScreen(currentJoke);
             // display->drawRect(0, 0, 128, 64, 1);
-            // u8g2->sendBuffer();
             display->display();
         }
     }
@@ -185,7 +178,7 @@ const char *Joke::processString(arduino::String currentJoke)
 
 void Joke::writeJokeToScreen(const char *currentJoke)
 {
-    if (strlen(currentJoke) > 22) // 22 characters is just about the edge of the screen
+    if (strlen(currentJoke) > 22) // u8g2: 22 characters is just about the edge of the screen, now I am not sure lol 
     {
         const char *processedStr = processString(currentJoke);
         display->setCursor(5, linePos);
@@ -200,7 +193,6 @@ void Joke::writeJokeToScreen(const char *currentJoke)
     }
     else
     {
-        // u8g2->drawStr(10, linePos, currentJoke);
         display->setCursor(5, linePos);
         display->write(currentJoke);
         linePos = lineStart; // reset the linePos (if we hit this else, we should be done)

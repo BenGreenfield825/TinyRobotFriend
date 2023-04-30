@@ -99,12 +99,9 @@ void loop()
 
 void bitmapTest()
 {
-  // u8g2.clearBuffer();
-  // display.clearDisplay();
+  display.clearDisplay();
   display.drawBitmap(0, 0, happy, 128, 64, 1);
-  // u8g2.drawXBM(0, 0, 128, 64, happy_closed_eyes);
   display.display();
-  // u8g2.sendBuffer();
 }
 
 void happyBlinking()
@@ -117,9 +114,6 @@ void happyBlinking()
   display.clearDisplay();
   display.drawBitmap(0, 0, happy, SCREEN_WIDTH, SCREEN_HEIGHT, 1);
   display.display();
-  //   u8g2.clearBuffer();
-  //   u8g2.drawXBM(0, 0, 128, 64, happy);
-  //   u8g2.sendBuffer();
   while (true)
   {
     // see if a button has been pressed
@@ -147,9 +141,6 @@ void happyBlinking()
         (doubleBlink == 4) ? blinks = 2 : blinks = 1;
         for (int i = 0; i < blinks; i++)
         {
-          //           u8g2.clearBuffer();
-          //           u8g2.drawXBM(0, 0, 128, 64, happy_closed_eyes);
-          //           u8g2.sendBuffer();
           display.clearDisplay();
           display.drawBitmap(0, 0, happy_closed_eyes, SCREEN_WIDTH, SCREEN_HEIGHT, 1);
           display.display();
