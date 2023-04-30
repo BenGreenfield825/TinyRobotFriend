@@ -7,6 +7,8 @@
 #include <Fonts/FreeMonoBoldOblique12pt7b.h>
 #include <Fonts/FreeSerif9pt7b.h>
 
+#include <Adafruit_NeoPixel.h>
+
 #include "Snake.h"
 #include "SnakeBoard.h"
 #include "DirectionalPad.h"
@@ -18,6 +20,11 @@
 #define OLED_RESET 4        // Reset pin # (or -1 if sharing Arduino reset pin)
 #define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+int Power = 11;
+int PIN  = 12;
+#define NUMPIXELS 1
+Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
 const int randomPin = D0;
 
@@ -62,10 +69,17 @@ void setup()
   pinMode(rightPin, INPUT);
   pinMode(downPin, INPUT);
   pinMode(leftPin, INPUT);
+
+  pixels.begin();
+  pinMode(Power,OUTPUT);
+  digitalWrite(Power, HIGH);
 }
 
 void loop()
 {
+  pixels.setPixelColor(0, pixels.Color(0, 150, 0));
+  pixels.setBrightness(10);
+  pixels.show();
   // Snake test(u8g2);
   // Joke joke(&display);
 
