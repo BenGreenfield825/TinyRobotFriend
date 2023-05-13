@@ -22,7 +22,7 @@
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 int Power = 11;
-int PIN  = 12;
+int PIN = 12;
 #define NUMPIXELS 1
 Adafruit_NeoPixel pixels(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ800);
 
@@ -43,6 +43,7 @@ int *dPadArr;
 
 // used for switching to faces or other screens
 bool isIdle = 1; // start as idle (show faces)
+unsigned long idleStartTime = 0;
 
 bool enterMenu = false; // check to see if index should be zero
 int menuIndex = 0;      // TODO: change logic so that index gets reset to 0 when leaving and re-entering menu
@@ -71,15 +72,28 @@ void setup()
   pinMode(leftPin, INPUT);
 
   pixels.begin();
-  pinMode(Power,OUTPUT);
+  pinMode(Power, OUTPUT);
   digitalWrite(Power, HIGH);
+  idleStartTime = millis();
 }
 
 void loop()
 {
-  pixels.setPixelColor(0, pixels.Color(0, 150, 0));
-  pixels.setBrightness(10);
-  pixels.show();
+  //TODO: this actually does kinda work, but only when you press a button since control is happening in happyBlinking(), I think
+  unsigned long currentMillis = millis();
+  if (currentMillis >= idleStartTime +1)
+  {
+    pixels.setPixelColor(0, pixels.Color(150, 0, 0)); //red
+    pixels.setBrightness(10);
+    pixels.show();
+  }
+  else
+  {
+    pixels.setPixelColor(0, pixels.Color(0, 150, 0)); //green
+    pixels.setBrightness(10);
+    pixels.show();
+  }
+
   // Snake test(u8g2);
   // Joke joke(&display);
 

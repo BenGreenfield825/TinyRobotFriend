@@ -25,9 +25,10 @@ private:
     int lineStart = 5; // default starting value
     int linePos = lineStart;
     int lineSpacing = 10;
+    int charCutoff = 20;
 
     // I'd rather put this in a txt file, but just having them in the class makes life simpler
-    std::vector<const char *> jokeList = { //probably doesn't need to be const char since I am not using u8g2 anymore but oh well
+    std::vector<const char *> jokeList = { // probably doesn't need to be const char since I am not using u8g2 anymore but oh well
         "Why did Adele cross the road? To say hello from the other side.",
         "What kind of concert only costs 45 cents? A 50 Cent concert featuring Nickelback.",
         "What did the grape say when it got crushed? Nothing, it just let out a little wine.",
@@ -144,18 +145,20 @@ Joke::Joke(Adafruit_SSD1306 *displayObj)
     {
         parseDPad();
         delay(100); // prevent button freaking out
-        if (upButton || rightButton || downButton || leftButton)
+        if (rightButton || leftButton)
         {
             display->clearDisplay();
             randomSeed(analogRead(randomPin));
             randomIndex = random(0, jokeList.size());
             const char *currentJoke = jokeList[randomIndex];
-            display->setCursor(5, 5);
-            display->write(currentJoke);
-            // adafruit library actually does the line splitting automatically, can probably simplify and remove these functions
-            // writeJokeToScreen(currentJoke);
-            // display->drawRect(0, 0, 128, 64, 1);
+            // adafruit library splits lines, but you can't choose where the new line starts which will mess with the border, so using my functions
+            writeJokeToScreen(currentJoke);
+            display->drawRect(0, 0, 128, 64, 1);
             display->display();
+        }
+        else if (upButton || downButton)
+        {
+            return;
         }
     }
 }
@@ -172,20 +175,20 @@ void Joke::parseDPad()
 const char *Joke::processString(arduino::String currentJoke)
 {
     arduino::String temp = currentJoke;
-    temp = temp.substring(0, 22);
+    temp = temp.substring(0, charCutoff);
     return temp.c_str();
 }
 
 void Joke::writeJokeToScreen(const char *currentJoke)
 {
-    if (strlen(currentJoke) > 22) // u8g2: 22 characters is just about the edge of the screen, now I am not sure lol 
+    if (strlen(currentJoke) > charCutoff) // u8g2: 22 characters is just about the edge of the screen, now I am not sure lol
     {
         const char *processedStr = processString(currentJoke);
         display->setCursor(5, linePos);
         display->write(processedStr);
         // u8g2->drawStr(10, linePos, processedStr);
         arduino::String temp = currentJoke;
-        temp = temp.substring(22, strlen(currentJoke));
+        temp = temp.substring(charCutoff, strlen(currentJoke));
         const char *remainingStr = temp.c_str();
         linePos += lineSpacing;
         writeJokeToScreen(remainingStr);

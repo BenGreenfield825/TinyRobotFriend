@@ -38,15 +38,15 @@ int* DirectionalPad::read()
     values[1] = digitalRead(rightPin);
     values[2] = digitalRead(downPin);
     values[3] = digitalRead(leftPin);
-    Serial.print("Up: ");
-    Serial.print(values[0]);
-    Serial.print(", Right: ");
-    Serial.print(values[1]);
-    Serial.print(", Down: ");
-    Serial.print(values[2]);
-    Serial.print(", Left: ");
-    Serial.print(values[3]);
-    Serial.println();
+    // Serial.print("Up: ");
+    // Serial.print(values[0]);
+    // Serial.print(", Right: ");
+    // Serial.print(values[1]);
+    // Serial.print(", Down: ");
+    // Serial.print(values[2]);
+    // Serial.print(", Left: ");
+    // Serial.print(values[3]);
+    // Serial.println();
 
     return values;
 }
