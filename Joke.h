@@ -13,6 +13,7 @@ class Joke
 {
 private:
     Adafruit_SSD1306 *display;
+    Adafruit_NeoPixel *pixels;
 
     const int randomPin = D0;
     DirectionalPad *dPad;
@@ -124,16 +125,22 @@ private:
         "What does a clock do when it's hungry? It goes back for seconds."};
 
 public:
-    Joke(Adafruit_SSD1306 *displayObj);
+    Joke(Adafruit_SSD1306 *displayObj, Adafruit_NeoPixel *pixelsObj);
     void parseDPad();
     const char *processString(arduino::String currentJoke);
     void writeJokeToScreen(const char *currentJoke);
 };
 
-Joke::Joke(Adafruit_SSD1306 *displayObj)
+Joke::Joke(Adafruit_SSD1306 *displayObj, Adafruit_NeoPixel *pixelsObj)
 {
     display = displayObj;
     display->clearDisplay();
+
+    pixels = pixelsObj;
+    pixels->setPixelColor(0, pixels->Color(0, 0, 150)); //blue
+    pixels->setBrightness(10);
+    pixels->show();
+
     dPad = new DirectionalPad();
     randomSeed(analogRead(randomPin));
     int randomIndex = random(0, jokeList.size());

@@ -53,7 +53,7 @@ const unsigned char moleMap[] PROGMEM = {
   B00111000
 };
 
-void setup() {
+void snakeSetup() {
   Serial.begin(9600);
   pinMode(Xpin, INPUT);
   pinMode(Ypin, INPUT);

@@ -9,8 +9,9 @@
 
 #include <Adafruit_NeoPixel.h>
 
-#include "Snake.h"
-#include "SnakeBoard.h"
+// #include "Snake.h"
+// #include "SnakeBoard.h"
+#include "arduino-snake.h"
 #include "DirectionalPad.h"
 #include "Joke.h"
 #include "bitmaps.h"
@@ -43,7 +44,7 @@ int *dPadArr;
 
 // used for switching to faces or other screens
 bool isIdle = 1; // start as idle (show faces)
-unsigned long idleStartTime = 0;
+unsigned long idleStartTime = 500;
 
 bool enterMenu = false; // check to see if index should be zero
 int menuIndex = 0;      // TODO: change logic so that index gets reset to 0 when leaving and re-entering menu
@@ -51,7 +52,6 @@ int menuIndex = 0;      // TODO: change logic so that index gets reset to 0 when
 // TODO: Add more faces: Add things like sleepy face if left idle for x seconds; Dizzy face if shaken? Seeed board might have thing for that
 //       Actually work on the games - Wack a Mole should be easy-ish, no hit button - just hover over the mole to score
 //       Snake: look into queue based system for the grid?
-//       LED: Seeed board has nice bright LED, let use it
 
 void setup()
 {
@@ -79,9 +79,10 @@ void setup()
 
 void loop()
 {
-  //TODO: this actually does kinda work, but only when you press a button since control is happening in happyBlinking(), I think
+  //TODO: this actually does kinda work, but only when you press a button since control is happening in happyBlinking(), I think.
+  // Might need to reformat happy face to not use a while loop, or maybe instead update the millis in that function
   unsigned long currentMillis = millis();
-  if (currentMillis >= idleStartTime +1)
+  if (currentMillis >= idleStartTime)
   {
     pixels.setPixelColor(0, pixels.Color(150, 0, 0)); //red
     pixels.setBrightness(10);
@@ -267,11 +268,13 @@ void wackAMole()
 void snake()
 {
   //   Snake snakeGame(u8g2);
+  Snake s;
+  s.start();
 }
 
 void jokes()
 {
-  Joke joke(&display);
+  Joke joke(&display, &pixels);
 }
 
 void readDPad()
@@ -283,6 +286,7 @@ void readDPad()
   downButton = dPadArr[2];
   leftButton = dPadArr[3];
 }
+
 
 /*
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣴⣶⣿⣿⣷⣶⣄⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀
