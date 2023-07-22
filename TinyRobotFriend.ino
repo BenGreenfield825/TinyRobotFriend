@@ -268,6 +268,9 @@ void wackAMole()
 void snake()
 {
   //   Snake snakeGame(u8g2);
+  pixels.setPixelColor(0, pixels.Color(0, 150, 0)); //green
+  pixels.setBrightness(10);
+  pixels.show();
   Snake s;
   s.start();
 }
