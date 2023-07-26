@@ -14,6 +14,7 @@
 #include "arduino-snake.h"
 #include "DirectionalPad.h"
 #include "Joke.h"
+#include "WhackAMole.h"
 #include "bitmaps.h"
 
 #define SCREEN_WIDTH 128    // OLED display width, in pixels
@@ -31,8 +32,8 @@ const int randomPin = D0;
 
 const int upPin = D7;
 const int rightPin = D8;
-const int downPin = D9;
-const int leftPin = D10;
+const int downPin = D10;
+const int leftPin = D9;
 
 int upButton;
 int rightButton;
@@ -74,7 +75,7 @@ void setup()
   pixels.begin();
   pinMode(Power, OUTPUT);
   digitalWrite(Power, HIGH);
-  idleStartTime = millis();
+  idleStartTime = 5000;
 }
 
 void loop()
@@ -262,6 +263,10 @@ int yBoxOffset(int position, int yFirstOffset, int yWordOffset, int yBoxSpacer)
 // place holder for entering game, will probably make a class
 void wackAMole()
 {
+  pixels.setPixelColor(0, pixels.Color(100, 0, 100)); //purple?
+  pixels.setBrightness(10);
+  pixels.show();
+  WhackAMole w(&display);
 }
 
 // very much a WIP lol

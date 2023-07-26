@@ -8,8 +8,8 @@ class DirectionalPad
 private:
     const int upPin = D7;
     const int rightPin = D8;
-    const int downPin = D9;
-    const int leftPin = D10;
+    const int downPin = D10;
+    const int leftPin = D9;
 
     int upButton = 0;
     int rightButton = 0;

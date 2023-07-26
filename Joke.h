@@ -15,7 +15,7 @@ private:
     Adafruit_SSD1306 *display;
     Adafruit_NeoPixel *pixels;
 
-    const int randomPin = D0;
+    const int randomPin = D1;
     DirectionalPad *dPad;
     int *dPadArr;
     int upButton = 0;
