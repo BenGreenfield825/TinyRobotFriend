@@ -80,24 +80,9 @@ void setup()
 
 void loop()
 {
-  //TODO: this actually does kinda work, but only when you press a button since control is happening in happyBlinking(), I think.
-  // Might need to reformat happy face to not use a while loop, or maybe instead update the millis in that function
-  unsigned long currentMillis = millis();
-  if (currentMillis >= idleStartTime)
-  {
-    pixels.setPixelColor(0, pixels.Color(150, 0, 0)); //red
-    pixels.setBrightness(10);
-    pixels.show();
-  }
-  else
-  {
-    pixels.setPixelColor(0, pixels.Color(0, 150, 0)); //green
-    pixels.setBrightness(10);
-    pixels.show();
-  }
-
-  // Snake test(u8g2);
-  // Joke joke(&display);
+  pixels.setPixelColor(0, pixels.Color(0, 150, 0)); //green
+  pixels.setBrightness(10);
+  pixels.show();
 
   readDPad();
 
@@ -273,7 +258,7 @@ void wackAMole()
 void snake()
 {
   //   Snake snakeGame(u8g2);
-  pixels.setPixelColor(0, pixels.Color(0, 150, 0)); //green
+  pixels.setPixelColor(0, pixels.Color(255, 255, 0)); //yellow
   pixels.setBrightness(10);
   pixels.show();
   Snake s;

@@ -137,7 +137,7 @@ void WhackAMole::Holes() {
 
 void WhackAMole::game() {
   unsigned long prev;
-  int period = 1500;
+  int period = 1000;  //move after 1 second (more like 1.5 cuz of the delay of the button presses whatever i don't wanna fix it)
   // MoleHole();
   while(true) {
     if((millis() - prev) > period)
@@ -173,7 +173,7 @@ void WhackAMole::game() {
           cursorPosX = h2x;
         }
       }
-      delay(150);
+      delay(200);
     }
     if (downButton) {
     // if ((rawX < 100 && rawX >= 0) && (rawY < 900 && rawY > 500)) {
@@ -196,7 +196,7 @@ void WhackAMole::game() {
           cursorPosX = h2x;
         }
       }
-      delay(150);
+      delay(200);
     }
     if (leftButton) {
     // if ((rawX < 900 && rawX > 300) && (rawY < 1024 && rawY > 1000)) {
@@ -216,7 +216,7 @@ void WhackAMole::game() {
       else if (cursorPosX == h5x) {
         cursorPosX = h4x;
       }
-      delay(150);
+      delay(200);
     }
     if (rightButton) {
     // if ((rawX < 535 && rawX > 500) && (rawY < 100 && rawY >= 0)) {
@@ -236,7 +236,7 @@ void WhackAMole::game() {
       else if (cursorPosX == h5x) {
         cursorPosX = h4x;
       }
-      delay(150);
+      delay(200);
     }
 
     if (cursorPosX == moleX && cursorPosY == moleY) {

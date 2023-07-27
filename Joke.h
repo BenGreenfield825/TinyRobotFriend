@@ -8,6 +8,7 @@
 
 #include <string>
 #include <vector>
+#include <time.h>
 
 class Joke
 {
@@ -142,7 +143,9 @@ Joke::Joke(Adafruit_SSD1306 *displayObj, Adafruit_NeoPixel *pixelsObj)
     pixels->show();
 
     dPad = new DirectionalPad();
-    randomSeed(analogRead(randomPin));
+    // randomSeed(analogRead(randomPin));
+    randomSeed(time(NULL));
+
     int randomIndex = random(0, jokeList.size());
 
     display->setTextSize(1);              // Normal 1:1 pixel scale
